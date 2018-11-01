@@ -47,11 +47,12 @@ public class Attendance extends HttpServlet {
 			
 				//TODO: need to also get time and check in sql if it is in the range of the class meeting
 				
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 				simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
 				System.out.println(simpleDateFormat.format(dateRaw));
 				String dateFull = simpleDateFormat.format(dateRaw);
-				String date = dateFull.substring();
+				String date = dateFull.substring(0,10);
+				String time = dateFull.substring(11);
 				
 				
 				Class.forName("com.mysql.jdbc.Driver");
@@ -64,6 +65,7 @@ public class Attendance extends HttpServlet {
 					if(rs.next()) {
 						System.out.println("found student");
 						//check if today's date equals a date in the table DaysLectureMeets
+						//if datetimecorrect { if location correct { }
 						PreparedStatement ps2 = conn.prepareStatement(
 						"IF EXISTS (SELECT * FROM DaysLectureMeets WHERE lectureUUID = ? AND lectureDate = ?)"
 						+ "INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)"
@@ -88,6 +90,7 @@ public class Attendance extends HttpServlet {
 						}
 						ps2.close();
 					}
+				ps.close();
 			}
 			
 			

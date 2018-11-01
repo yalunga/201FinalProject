@@ -64,7 +64,8 @@ public class ClassesStudent extends HttpServlet {
 				} else {
 					
 					response.getWriter().write("Lecture Not Found");
-				}	
+				}
+				ps.close();
 			} catch(SQLException sqle) {
 				System.out.println(sqle.getMessage());
 			} catch(ClassNotFoundException cnfe) {

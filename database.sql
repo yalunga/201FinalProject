@@ -40,7 +40,8 @@ CREATE TABLE Lecture (
     endTime TIME,
     meetingDaysOfWeek VARCHAR(100),
     lectureDescription VARCHAR(500),
-    location VARCHAR(100);
+    longitutde VARCHAR(100);
+    latitude VARCHAR(100);
     FOREIGN KEY (classID) REFERENCES Class(classID)
 );
 

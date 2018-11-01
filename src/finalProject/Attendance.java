@@ -62,13 +62,17 @@ public class Attendance extends HttpServlet {
 					rs = ps.executeQuery();
 					if(rs.next()) {
 						System.out.println("found student");
+						//check if today's date equals a date in the table DaysLectureMeets
 						PreparedStatement ps2 = conn.prepareStatement(
-								"INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)"
-								);
-						ps2.setString(1, studentID);
-						ps2.setString(2, lectureID);
-						ps2.setString(3, date);
-						
+						"IF EXISTS (SELECT * FROM DaysLectureMeets WHERE lectureUUID = ? AND lectureDate = ?)"
+						+ "INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)"
+					    );
+						ps2.setString(1, lectureID);
+					    ps2.setString(2, date);
+						ps2.setString(3, studentID);
+						ps2.setString(4, lectureID);
+						ps2.setString(5, date);
+
 						int result = ps2.executeUpdate();
 						System.out.println(result);
 						if(result > 0) {

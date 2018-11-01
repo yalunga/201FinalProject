@@ -54,7 +54,7 @@ CREATE TABLE LectureRegistration (
 );
 
 CREATE TABLE QnA_Table (
-	idx INT(11) PRIMARY KEY,
+	idx INT(11) PRIMARY KEY AUTO_INCREMENT,
     lectureUUID VARCHAR(100),
     userID VARCHAR(100),
     postTitle VARCHAR(100) NULL,
@@ -66,10 +66,16 @@ CREATE TABLE QnA_Table (
 );
 
 CREATE TABLE AttendanceRecord (
-	idx INT(11) PRIMARY KEY,
+	idx INT(11) PRIMARY KEY AUTO_INCREMENT,
     studentID VARCHAR(100),
     lectureUUID VARCHAR(100),
     lectureDate DATE,
 	FOREIGN KEY (studentID) REFERENCES User(StudentID),
+    FOREIGN KEY (lectureUUID) REFERENCES Lecture(lectureUUID)
+);
+
+CREATE TABLE DaysLectureMeets (
+	lectureUUID VARCHAR(100),
+	lectureDate DATE,
     FOREIGN KEY (lectureUUID) REFERENCES Lecture(lectureUUID)
 );

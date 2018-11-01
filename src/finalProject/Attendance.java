@@ -43,53 +43,78 @@ public class Attendance extends HttpServlet {
 			// ************************* CHECK IN *************************************
 			
 			if (requestType == "checkIn") {
-				Date dateRaw = new Date();
-			
-				//TODO: need to also get time and check in sql if it is in the range of the class meeting
+				String longitude = request.getParameter("longitude");
+				String latitude = request.getParameter("latitude");
 				
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				//Log datetime that student sent this request
+				Date dateRaw = new Date();
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
 				System.out.println(simpleDateFormat.format(dateRaw));
 				String dateFull = simpleDateFormat.format(dateRaw);
+				//Final result: 
 				String date = dateFull.substring(0,10);
 				String time = dateFull.substring(11);
 				
 				
 				Class.forName("com.mysql.jdbc.Driver");
 				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				
+				
 				ps = conn.prepareStatement(
 						"SELECT * FROM User WHERE studentID=?"
 						);
 				ps.setString(1, studentID);
-					rs = ps.executeQuery();
-					if(rs.next()) {
-						System.out.println("found student");
-						//check if today's date equals a date in the table DaysLectureMeets
-						//if datetimecorrect { if location correct { }
-						PreparedStatement ps2 = conn.prepareStatement(
-						"IF EXISTS (SELECT * FROM DaysLectureMeets WHERE lectureUUID = ? AND lectureDate = ?)"
+				rs = ps.executeQuery();
+				
+				if(rs.next()) { //Student exists
+					System.out.println("found student");					
+					//check if today's date equals a date in the table DaysLectureMeets
+					//if datetimecorrect { if location correct { }
+					PreparedStatement ps2 = conn.prepareStatement(
+							"IF EXISTS (SELECT * FROM DaysLectureMeets WHERE lectureUUID = ? AND lectureDate = ?)"
+							+ "SELECT * FROM Lecture WHERE lectureUUID = ? AND ? BETWEEN startTime AND AddTime(startTime, '00:10:00')"
+							);
+					ps2.setString(1, lectureID);
+				    ps2.setString(2, date);
+				    ps2.setString(3, lectureID);
+				    ps2.setString(4, time);
+					rs2 = ps2.executeQuery();
+
+					if(rs2.next()) {	
+						PreparedStatement ps3 = conn.prepareStatement(
+						"IF EXISTS (SELECT * FROM Lecture WHERE longitude = ? AND latitude = ?)"
 						+ "INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)"
 					    );
-						ps2.setString(1, lectureID);
-					    ps2.setString(2, date);
-						ps2.setString(3, studentID);
-						ps2.setString(4, lectureID);
-						ps2.setString(5, date);
+						ps3.setString(1, longitude);
+					    ps3.setString(2, latitude);
+						ps3.setString(3, studentID);
+						ps3.setString(4, lectureID);
+						ps3.setString(5, date);
 
-						int result = ps2.executeUpdate();
+						int result = ps3.executeUpdate();
 						System.out.println(result);
 						if(result > 0) {
 							response.getWriter().write("Checked In Successfully.");
 						}
-						else {
+						else { //location incorrect
 							
-							//cases covered: if: class does not meet today 
 							//TODO:
-							//cases not yet covered: nested if: class is not at the right time
-							//not yet covered: un nested: user is not in correct location
-						}
-						ps2.close();
+							//output some error
+							System.out.println("send to frontend: Wrong location: You must be in the classroom!");
+						} 
+						ps3.close();
+						
+					} //endif (datetime was correct)
+					
+					else { //datetime incorrect
+						//TODO:
+						//output some error
+						System.out.println("send to frontend: Class is not in session.");
 					}
+					ps2.close();
+					
+				} //endif (student existed)
 				ps.close();
 			}
 			

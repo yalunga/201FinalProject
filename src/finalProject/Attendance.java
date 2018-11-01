@@ -45,7 +45,8 @@ public class Attendance extends HttpServlet {
 			if (requestType == "checkIn") {
 				Date dateRaw = new Date();
 			
-			
+				//TODO: need to also get time and check in sql if it is in the range of the class meeting
+				
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
 				System.out.println(simpleDateFormat.format(dateRaw));
@@ -77,6 +78,13 @@ public class Attendance extends HttpServlet {
 						System.out.println(result);
 						if(result > 0) {
 							response.getWriter().write("Checked In Successfully.");
+						}
+						else {
+							
+							//cases covered: if: class does not meet today 
+							//TODO:
+							//cases not yet covered: nested if: class is not at the right time
+							//not yet covered: un nested: user is not in correct location
 						}
 						ps2.close();
 					}

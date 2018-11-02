@@ -43,7 +43,8 @@ public class ClassesStudent extends HttpServlet {
 		ResultSet rs;
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		
+		System.out.println("request type: " + requestType);
+		System.out.println("studentId: " + studentID);
 		// ************************* REGISTER CLASSES ********************************
 		
 		if (requestType == "registerClass") {
@@ -132,22 +133,23 @@ public class ClassesStudent extends HttpServlet {
 		
 		// ************************* GET CLASSES *************************************
 		
-		else if (requestType == "getClasses") {
+		else if (requestType.equals("getClasses")) {
 			//I want to return class info and instructor name
 			//I am given a studentID only.
+			System.out.println("Reached getClasses");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false&allowPublicKeyRetrieval=true");
 				ps = (PreparedStatement) conn.prepareStatement(
 						"SELECT c.department, c.classNumber, c.classDescription, u.fullName "
 						+ "FROM lectureRegistration lr"
 						+ "INNER JOIN Lecture l "
 						+ "ON lr.lectureUUID = l.lectureUUID "
 						+ "INNER JOIN Class c "
-						+ "ON l.classID = c.classID"
-						+ "INNER JOIN User u"
+						+ "ON l.classID = c.classID "
+						+ "INNER JOIN User u "
 						+ "ON c.instructorID = u.instructorID "
-						+ "WHERE studentID = ?"
+						+ "WHERE lr.userID = ?"
 						);
 				ArrayList<Lecture> lectures = new ArrayList<Lecture>();
 				ps.setString(1, studentID);

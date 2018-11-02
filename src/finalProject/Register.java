@@ -42,7 +42,7 @@ public class Register extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false&allowPublicKeyRetrieval=true");
 			ps = conn.prepareStatement(
 					"SELECT * FROM Lecture WHERE lectureUUID=?"
 					);

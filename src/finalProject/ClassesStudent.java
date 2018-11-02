@@ -1,11 +1,21 @@
 package finalProject;
 
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.mysql.*;
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 /**
  * Servlet implementation class Classes
@@ -40,8 +50,8 @@ public class ClassesStudent extends HttpServlet {
 			String lectureID = request.getParameter("lectureID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-				ps = conn.prepareStatement(
+				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps = (PreparedStatement) conn.prepareStatement(
 						"SELECT * FROM Lecture WHERE lectureUUID=?"
 						);
 				ps.setString(1, lectureID);
@@ -49,7 +59,7 @@ public class ClassesStudent extends HttpServlet {
 					rs = ps.executeQuery();
 					if(rs.next()) {
 						System.out.println("found a lecture");
-						PreparedStatement ps2 = conn.prepareStatement(
+						PreparedStatement ps2 = (PreparedStatement) conn.prepareStatement(
 								"INSERT INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
 								);
 						ps2.setString(1, studentID);
@@ -83,20 +93,21 @@ public class ClassesStudent extends HttpServlet {
 		// ************************* UNREGISTER CLASSES ******************************
 		
 		else if (requestType == "unregisterClass") {
+			String lectureID = request.getParameter("lecutreID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-				ps = conn.prepareStatement(" DELETE FROM LectureRegistration WHERE studentID = ? AND LectureUUID = ?");
+				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps = (PreparedStatement) conn.prepareStatement(" DELETE FROM LectureRegistration WHERE studentID = ? AND LectureUUID = ?");
 				ps.setString(1, studentID);
 				ps.setString(2, lectureID);
 				if(studentID != null && studentID != ""
 					&& lectureID != null && lectureID != "") {
-					int deleted = ps.executeQuery();
-					if (deleted>1) {
+					int deleted = ps.executeUpdate();
+					if (deleted > 1) {
 						System.out.println("Deleted successfully.");
 					}
 					else {
-						System.out.println("NOTHING WAS DELETED!")
+						System.out.println("NOTHING WAS DELETED!");
 					}
 				}
 				
@@ -126,8 +137,8 @@ public class ClassesStudent extends HttpServlet {
 			//I am given a studentID only.
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-				ps = conn.prepareStatement(
+				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps = (PreparedStatement) conn.prepareStatement(
 						"SELECT c.department, c.classNumber, c.classDescription, u.fullName "
 						+ "FROM lectureRegistration lr"
 						+ "INNER JOIN Lecture l "

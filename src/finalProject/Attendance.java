@@ -1,13 +1,21 @@
 package finalProject;
 
 import java.io.IOException;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.*;
+
+import com.google.gson.Gson;
+import com.mysql.*;
 
 /**
  * Servlet implementation class Attendance
@@ -63,7 +71,7 @@ public class Attendance extends HttpServlet {
 				try {	
 
 					Class.forName("com.mysql.jdbc.Driver");
-					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+					conn =  DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
 					
 					
 					ps = conn.prepareStatement(

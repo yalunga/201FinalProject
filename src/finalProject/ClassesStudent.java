@@ -142,7 +142,7 @@ public class ClassesStudent extends HttpServlet {
 				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false&allowPublicKeyRetrieval=true");
 				ps = (PreparedStatement) conn.prepareStatement(
 						"SELECT c.department, c.classNumber, c.classDescription, u.fullName "
-						+ "FROM lectureRegistration lr"
+						+ "FROM lectureRegistration lr "
 						+ "INNER JOIN Lecture l "
 						+ "ON lr.lectureUUID = l.lectureUUID "
 						+ "INNER JOIN Class c "

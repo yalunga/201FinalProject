@@ -23,7 +23,6 @@ CREATE TABLE Class (
 	classID VARCHAR(100) PRIMARY KEY,
     department VARCHAR(100),
     classNumber VARCHAR(100),
-    instructorID VARCHAR(100),
     classDescription VARCHAR(100),
     lectureIDs VARCHAR(100),
     FOREIGN KEY (instructorID) REFERENCES User(instructorID)
@@ -36,6 +35,7 @@ CREATE TABLE Lecture (
 	lectureUUID VARCHAR(100) UNIQUE,
     sectionID VARCHAR(100) PRIMARY KEY,
     classID VARCHAR(100),
+    instructorID VARCHAR(100),
     startTime TIME,
     endTime TIME,
     meetingDaysOfWeek VARCHAR(100),

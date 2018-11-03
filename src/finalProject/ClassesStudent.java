@@ -148,7 +148,7 @@ public class ClassesStudent extends HttpServlet {
 						+ "INNER JOIN Class c "
 						+ "ON l.classID = c.classID "
 						+ "INNER JOIN User u "
-						+ "ON c.instructorID = u.instructorID "
+						+ "ON l.instructorID = u.instructorID "
 						+ "WHERE lr.userID = ?"
 						);
 				ArrayList<Lecture> lectures = new ArrayList<Lecture>();

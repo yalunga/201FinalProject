@@ -155,36 +155,36 @@ public class Attendance extends HttpServlet {
 			
 			// ************************* GET HISTORY *************************************
 			
-			else if (requestType == "getHistory") {
+else if (requestType == "getHistory") {
 				
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-					ps = conn.prepareStatement(
-							"SELECT c.department, c.classNumber, c.classDescription, u.fullName "
-							+ "FROM lectureRegistration lr"
-							+ "INNER JOIN Lecture l "
-							+ "ON lr.lectureUUID = l.lectureUUID "
-							+ "INNER JOIN Class c "
-							+ "ON l.classID = c.classID"
-							+ "INNER JOIN User u"
-							+ "ON c.instructorID = u.instructorID "
-							+ "WHERE studentID = ?"
+					
+					
+					ArrayList<String> daysAbsent = new ArrayList<String>();
+					
+					// get all dates lecture met
+					PreparedStatement ps = conn.prepareStatement(
+							"SELECT d.lectureDate "
+							+ "FROM DaysLectureMeets d "
+							+ "WHERE lectureUUID = ?"
+							+ "AND NOT EXISTS"
+							+ "(SELECT a.lectureDate"
+							+ "FROM AttendanceRecord a "
+							+ "WHERE a.studentID = ? AND a.lectureUUID = ?)"
 							);
-					ArrayList<Lecture> lectures = new ArrayList<Lecture>();
-					ps.setString(1, studentID);
-					if(studentID != null && studentID != "") {
-						rs = ps.executeQuery();
-						while(rs.next()) {
-							String dept = rs.getString("c.department");
-							String num = rs.getString("c.classNumber");
-							String des = rs.getString("c.classDescription");
-							String instr = rs.getString("u.fullName");
-							Lecture temp = new Lecture(dept, num, des, instr); 
-							lectures.add(temp);
-						}
+					ps.setString(1, lectureID);
+					ps.setString(2, studentID);
+					ps.setString(3, lectureID);
+					rs = ps.executeQuery();
+					while(rs.next()) {
+						String date = rs.getString("d.lectureDate");
+						daysAbsent.add(date);
 					}
-					String json = new Gson().toJson(lectures);
+
+				
+					String json = new Gson().toJson(daysAbsent);
 					response.getWriter().write(json);
 				} catch(SQLException sqle) {
 					System.out.println(sqle.getMessage());

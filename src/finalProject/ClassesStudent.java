@@ -47,7 +47,7 @@ public class ClassesStudent extends HttpServlet {
 		System.out.println("studentId: " + studentID);
 		// ************************* REGISTER CLASSES ********************************
 		
-		if (requestType == "registerClass") {
+		if (requestType.equals("registerClass")) {
 			String lectureID = request.getParameter("lectureID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
@@ -93,7 +93,7 @@ public class ClassesStudent extends HttpServlet {
 		
 		// ************************* UNREGISTER CLASSES ******************************
 		
-		else if (requestType == "unregisterClass") {
+		else if (requestType.equals("unregisterClass")) {
 			String lectureID = request.getParameter("lecutreID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");

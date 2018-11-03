@@ -50,11 +50,11 @@ public class Attendance extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		if(studentID != null && studentID != ""
-			&& lectureID != null && lectureID != "") { //returns string upon success, nothing upon fail
+			&& lectureID != null && lectureID.trim() != "") { //returns string upon success, nothing upon fail
 			
 			// ************************* CHECK IN *************************************
 			
-			if (requestType == "checkIn") {
+			if (requestType.equals("checkIn")) {
 				String longitude = request.getParameter("longitude");
 				String latitude = request.getParameter("latitude");
 				
@@ -162,7 +162,7 @@ public class Attendance extends HttpServlet {
 			
 			// ************************* GET HISTORY *************************************
 			
-else if (requestType == "getHistory") {
+else if (requestType.equals("getHistory")) {
 				
 				try {
 					Class.forName("com.mysql.jdbc.Driver");

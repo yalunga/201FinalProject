@@ -115,9 +115,16 @@ public class Attendance extends HttpServlet {
 						    	ps4.setString(4, lectureID);
 						    	ps4.setString(5, date);
 						    	
-						    	ps4.executeUpdate();
-						    	System.out.println("3: User is in the correct location within the classtime.");
-						    	response.getWriter().write("3");
+						    	Int resultNum = ps4.executeUpdate();
+						    	if (resultNum > 0) {
+						    		System.out.println("4: User is in the correct location within checkin time.");
+						    		response.getWriter().write("4");
+						    	}
+						    	else {
+						    		System.out.println("3: User is in the correct location within the classtime.");
+						    		response.getWriter().write("3");
+						    	}
+						    	
 						    	
 						    }
 						    else {

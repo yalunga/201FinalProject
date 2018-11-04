@@ -115,7 +115,7 @@ public class Attendance extends HttpServlet {
 						    	ps4.setString(4, lectureID);
 						    	ps4.setString(5, date);
 						    	
-						    	Int resultNum = ps4.executeUpdate();
+						    	int resultNum = ps4.executeUpdate();
 						    	if (resultNum > 0) {
 						    		System.out.println("4: User is in the correct location within checkin time.");
 						    		response.getWriter().write("4");
@@ -172,7 +172,7 @@ else if (requestType.equals("getHistory")) {
 					ArrayList<String> daysAbsent = new ArrayList<String>();
 					
 					// get all dates lecture met
-					PreparedStatement ps = conn.prepareStatement(
+					PreparedStatement ps1 = conn.prepareStatement(
 							"SELECT d.lectureDate "
 							+ "FROM DaysLectureMeets d "
 							+ "WHERE lectureUUID = ?"
@@ -181,10 +181,10 @@ else if (requestType.equals("getHistory")) {
 							+ "FROM AttendanceRecord a "
 							+ "WHERE a.studentID = ? AND a.lectureUUID = ?)"
 							);
-					ps.setString(1, lectureID);
-					ps.setString(2, studentID);
-					ps.setString(3, lectureID);
-					rs = ps.executeQuery();
+					ps1.setString(1, lectureID);
+					ps1.setString(2, studentID);
+					ps1.setString(3, lectureID);
+					rs = ps1.executeQuery();
 					while(rs.next()) {
 						String date = rs.getString("d.lectureDate");
 						daysAbsent.add(date);

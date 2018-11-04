@@ -1,9 +1,7 @@
 package finalProject;
 
 import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -13,9 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.mysql.*;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
 
 /**
  * Servlet implementation class Classes
@@ -51,8 +46,8 @@ public class ClassesStudent extends HttpServlet {
 			String lectureID = request.getParameter("lectureID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-				ps = (PreparedStatement) conn.prepareStatement(
+				conn =  DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps =  conn.prepareStatement(
 						"SELECT * FROM Lecture WHERE lectureUUID=?"
 						);
 				ps.setString(1, lectureID);
@@ -60,7 +55,7 @@ public class ClassesStudent extends HttpServlet {
 					rs = ps.executeQuery();
 					if(rs.next()) {
 						System.out.println("found a lecture");
-						PreparedStatement ps2 = (PreparedStatement) conn.prepareStatement(
+						PreparedStatement ps2 =  conn.prepareStatement(
 								"INSERT INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
 								);
 						ps2.setString(1, studentID);
@@ -97,8 +92,8 @@ public class ClassesStudent extends HttpServlet {
 			String lectureID = request.getParameter("lecutreID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-				ps = (PreparedStatement) conn.prepareStatement(" DELETE FROM LectureRegistration WHERE studentID = ? AND LectureUUID = ?");
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps = conn.prepareStatement(" DELETE FROM LectureRegistration WHERE studentID = ? AND LectureUUID = ?");
 				ps.setString(1, studentID);
 				ps.setString(2, lectureID);
 				if(studentID != null && studentID != ""
@@ -143,28 +138,21 @@ public class ClassesStudent extends HttpServlet {
 			System.out.println("Reached getClasses");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false&allowPublicKeyRetrieval=true");
-				ps = (PreparedStatement) conn.prepareStatement(
-						"SELECT c.department, c.classNumber, c.classDescription, u.fullName "
-						+ "FROM lectureRegistration lr "
-						+ "INNER JOIN Lecture l "
-						+ "ON lr.lectureUUID = l.lectureUUID "
-						+ "INNER JOIN Class c "
-						+ "ON l.classID = c.classID "
-						+ "INNER JOIN User u "
-						+ "ON l.instructorID = u.instructorID "
-						+ "WHERE lr.userID = ?"
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				ps = conn.prepareStatement(
+						"SELECT c.department, c.classNumber, c.classDescription, u.fullName FROM lectureRegistration lr INNER JOIN Lecture l ON lr.lectureUUID = l.lectureUUID INNER JOIN Class c ON l.classID = c.classID INNER JOIN User u ON l.instructorID = u.instructorID WHERE lr.userID = ?"
 						);
 				ArrayList<Lecture> lectures = new ArrayList<Lecture>();
 				ps.setString(1, studentID);
 				if(studentID != null && studentID != "") {
 					rs = ps.executeQuery();
 					while(rs.next()) {
-						String dept = rs.getString("c.department");
-						String num = rs.getString("c.classNumber");
-						String des = rs.getString("c.classDescription");
-						String instr = rs.getString("u.fullName");
+						String dept = rs.getString("department");
+						String num = rs.getString("classNumber");
+						String des = rs.getString("classDescription");
+						String instr = rs.getString("fullName");
 						Lecture temp = new Lecture(dept, num, des, instr); 
+						System.out.println("Found lecture: " + dept + num + ", " + des + ", " + instr);
 						lectures.add(temp);
 					}
 				}

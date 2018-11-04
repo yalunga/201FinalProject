@@ -23,6 +23,7 @@ CREATE TABLE Class (
 	classID VARCHAR(100) PRIMARY KEY,
     department VARCHAR(100),
     classNumber VARCHAR(100),
+    instructorID VARCHAR(100),
     classDescription VARCHAR(100),
     lectureIDs VARCHAR(100),
     FOREIGN KEY (instructorID) REFERENCES User(instructorID)
@@ -42,11 +43,12 @@ CREATE TABLE Lecture (
     lectureDescription VARCHAR(500),
     longitutde VARCHAR(100),
     latitude VARCHAR(100),
-    FOREIGN KEY (classID) REFERENCES Class(classID)
+    FOREIGN KEY (classID) REFERENCES Class(classID),
+    FOREIGN KEY (instructorID) REFERENCES User(instructorID)
 );
 
-INSERT INTO Lecture (lectureUUID, sectionID, classID, startTime, endTime, meetingDaysOfWeek, lectureDescription)
-VALUES("ABCD", "8AM", "CSCI201", "08:00:00", "09:20:00", "TTh", "Principles of Software Development");
+INSERT INTO Lecture (lectureUUID, sectionID, classID, instructorID, startTime, endTime, meetingDaysOfWeek, lectureDescription)
+VALUES("ABCD", "8AM", "CSCI201", "Miller", "08:00:00", "09:20:00", "TTh", "Principles of Software Development");
 
 CREATE TABLE LectureRegistration (
 	userID VARCHAR(100),

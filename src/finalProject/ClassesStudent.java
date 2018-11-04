@@ -106,9 +106,13 @@ public class ClassesStudent extends HttpServlet {
 					int deleted = ps.executeUpdate();
 					if (deleted > 1) {
 						System.out.println("Deleted successfully.");
+						response.getWriter().write("Deleted");
+
 					}
 					else {
 						System.out.println("NOTHING WAS DELETED!");
+						response.getWriter().write("Lecture not found");
+
 					}
 				}
 				

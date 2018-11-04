@@ -104,7 +104,7 @@ public class ClassesStudent extends HttpServlet {
 				if(studentID != null && studentID != ""
 					&& lectureID != null && lectureID != "") {
 					int deleted = ps.executeUpdate();
-					if (deleted > 1) {
+					if (deleted > 0) {
 						System.out.println("Deleted successfully.");
 						response.getWriter().write("Deleted");
 

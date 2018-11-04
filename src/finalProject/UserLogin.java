@@ -65,6 +65,9 @@ public class UserLogin extends HttpServlet {
 					ps.setString(7, userType);
 					if(idToken != null) {
 						rs = ps.executeUpdate();
+						if (rs > 0) {
+							
+						}
 					}
 					
 				} catch(SQLException sqle) {

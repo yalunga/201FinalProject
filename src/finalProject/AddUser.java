@@ -34,9 +34,9 @@ public class AddUser extends HttpServlet {
 		// TODO Auto-generated method stub
 		String userID = request.getParameter("userID");
 		String idToken = request.getParameter("idToken");
-		String fullName = request.getParameter("fullName");
 		String lastName = request.getParameter("lastName");
-		String firstName = request.getParameter("lastName");
+		String firstName = request.getParameter("firstName");
+		String fullname = firstName + " " + lastName;
 		String email = request.getParameter("email");
 		String userType = request.getParameter("userType");
 		Connection conn = null;

@@ -4,7 +4,6 @@ USE askUSC;
 
 CREATE TABLE User (
 	userID VARCHAR(100) PRIMARY KEY,
-    idToken VARCHAR(100) UNIQUE,
     fullName VARCHAR(100),
     lastName VARCHAR(100),
     firstName VARCHAR(100),
@@ -16,8 +15,8 @@ CREATE TABLE User (
     instructorType VARCHAR(100) NULL
 );
 
-INSERT INTO User (userID, idToken, fullName, lastName, firstName, email, userType, instructorID)
-VALUES ("millerID", "millerToken", "Jeff Miller", "Miller", "Jeff", "miller@usc.edu", "instructor", "Miller");
+INSERT INTO User (userID, fullName, lastName, firstName, email, userType, instructorID)
+VALUES ("millerID", "Jeff Miller", "Miller", "Jeff", "miller@usc.edu", "instructor", "Miller");
 
 CREATE TABLE Class (
 	classID VARCHAR(100) PRIMARY KEY,

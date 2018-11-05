@@ -84,7 +84,7 @@ public class UserLogin extends HttpServlet {
 			if(requestType.equals("registerUser")) {
 		    	String userID = request.getParameter("userID");
 				String lastName = request.getParameter("lastName");
-				String firstName = request.getParameter("lastName");
+				String firstName = request.getParameter("firstName");
 				String fullName = firstName + " " + lastName;
 				String email = request.getParameter("email");
 				String userType = request.getParameter("userType");
@@ -101,27 +101,28 @@ public class UserLogin extends HttpServlet {
 				}
 				
 				try {
-					
+					System.out.println("Trying to add idtoken " + idToken + " to the database.");
 					Class.forName("com.mysql.jdbc.Driver");
 					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
 					ps = conn.prepareStatement(
-							"INSERT IGNORE INTO User (userID, idToken, fullName, lastName, firstName, email, userType, studentID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+							"INSERT INTO User (userID, fullName, lastName, firstName, email, userType, studentID) VALUES (?, ?, ?, ?, ?, ?, ?)"
 							);
 					ps.setString(1, userID);
-					ps.setString(2, idToken);
-					ps.setString(3, fullName);
-					ps.setString(4, lastName);
-					ps.setString(5, firstName);
-					ps.setString(6, email);
-					ps.setString(7, userType);
-					ps.setString(8, studentID);
+					ps.setString(2, fullName);
+					ps.setString(3, lastName);
+					ps.setString(4, firstName);
+					ps.setString(5, email);
+					ps.setString(6, userType);
+					ps.setString(7, studentID);
 					if(idToken != null) {
 						rs = ps.executeUpdate();
 						if (rs > 0) {
 							response.getWriter().write("Registered");
+							System.out.println(userID + " registered");
 						}
 						else {
 							response.getWriter().write("Not registered");
+							System.out.println(userID + " not registered");
 						}
 					}
 					

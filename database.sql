@@ -41,14 +41,14 @@ CREATE TABLE Lecture (
     endTime TIME,
     meetingDaysOfWeek VARCHAR(100),
     lectureDescription VARCHAR(500),
-    longitutde VARCHAR(100),
+    longitude VARCHAR(100),
     latitude VARCHAR(100),
     FOREIGN KEY (classID) REFERENCES Class(classID),
     FOREIGN KEY (instructorID) REFERENCES User(instructorID)
 );
 
-INSERT INTO Lecture (lectureUUID, sectionID, classID, instructorID, startTime, endTime, meetingDaysOfWeek, lectureDescription)
-VALUES("ABCD", "8AM", "CSCI201", "Miller", "08:00:00", "09:20:00", "TTh", "Principles of Software Development");
+INSERT INTO Lecture (lectureUUID, sectionID, classID, instructorID, startTime, endTime, meetingDaysOfWeek, lectureDescription, longitude, latitude)
+VALUES("ABCD", "8AM", "CSCI201", "Miller", "08:00:00", "09:20:00", "TTh", "Principles of Software Development", "-118.287588", "34.019594");
 
 CREATE TABLE LectureRegistration (
 	userID VARCHAR(100),

@@ -8,9 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+
 
 /**
  * Servlet implementation class UserLogin
@@ -79,7 +77,7 @@ public class UserLogin extends HttpServlet {
 		int rs;
 		
 		
-		if(userID != null && userID.trim() != "") {
+		//if(userID != null && userID.trim() != "") {
 			
 			// ************************* REGISTER USER *************************************
 			
@@ -90,13 +88,16 @@ public class UserLogin extends HttpServlet {
 				String fullName = firstName + " " + lastName;
 				String email = request.getParameter("email");
 				String userType = request.getParameter("userType");
+				String studentID;
+				String instructorID;
+				
 				if (userType.equals("student")) {
-					String studentID = userID;
-					String instructorID = null;
+					studentID = userID;
+					instructorID = null;
 				}
 				else {
-					String instructorID = userID;
-					String studentID = null;
+					instructorID = userID;
+					studentID = null;
 				}
 				
 				try {
@@ -104,7 +105,7 @@ public class UserLogin extends HttpServlet {
 					Class.forName("com.mysql.jdbc.Driver");
 					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
 					ps = conn.prepareStatement(
-							"INSERT IGNORE INTO User (userID, idToken, fullName, lastName, firstName, email, userType, studentID) VALUES (?, ?, ?, ?, ?, ?, ?)"
+							"INSERT IGNORE INTO User (userID, idToken, fullName, lastName, firstName, email, userType, studentID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 							);
 					ps.setString(1, userID);
 					ps.setString(2, idToken);
@@ -113,6 +114,7 @@ public class UserLogin extends HttpServlet {
 					ps.setString(5, firstName);
 					ps.setString(6, email);
 					ps.setString(7, userType);
+					ps.setString(8, studentID);
 					if(idToken != null) {
 						rs = ps.executeUpdate();
 						if (rs > 0) {
@@ -136,10 +138,11 @@ public class UserLogin extends HttpServlet {
 					}
 				}
 			}
+    }
 			
 			// ************************* GET USER PROFILE *************************************
 
-			else if (requestType.equals("getUserProfile")) {
+			/*else if (requestType.equals("getUserProfile")) {
 				
 				try {
 					
@@ -168,7 +171,7 @@ public class UserLogin extends HttpServlet {
 		}
 		
 		
-	}
+	//}
 
 
 	/**

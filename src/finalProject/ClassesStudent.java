@@ -140,7 +140,7 @@ public class ClassesStudent extends HttpServlet {
 				Class.forName("com.mysql.jdbc.Driver");
 				conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
 				ps = conn.prepareStatement(
-						"SELECT c.department, c.classNumber, c.classDescription, u.fullName, l.latitude, l.longitude, l.startTime, l.endTime, l.meetingDaysOfWeek FROM lectureRegistration lr INNER JOIN Lecture l ON lr.lectureUUID = l.lectureUUID INNER JOIN Class c ON l.classID = c.classID INNER JOIN User u ON l.instructorID = u.instructorID WHERE lr.userID = ?"
+						"SELECT c.department, c.classNumber, c.classDescription, u.fullName, l.latitude, l.longitude, l.startTime, l.endTime, l.meetingDaysOfWeek, l.lectureUUID FROM lectureRegistration lr INNER JOIN Lecture l ON lr.lectureUUID = l.lectureUUID INNER JOIN Class c ON l.classID = c.classID INNER JOIN User u ON l.instructorID = u.instructorID WHERE lr.userID = ?"
 						);
 				ArrayList<Lecture> lectures = new ArrayList<Lecture>();
 				ps.setString(1, studentID);
@@ -156,7 +156,8 @@ public class ClassesStudent extends HttpServlet {
 						String latitude = rs.getString("latitude");
 						String longitude = rs.getString("longitude");
 						String meetingDaysOfWeek = rs.getString("meetingDaysOfWeek");
-						Lecture temp = new Lecture(dept, num, des, instr, startTime, endTime, latitude, longitude, meetingDaysOfWeek); 
+						String id = rs.getString("lectureUUID");
+						Lecture temp = new Lecture(dept, num, des, instr, startTime, endTime, latitude, longitude, meetingDaysOfWeek, id); 
 						System.out.println("Found lecture: " + dept + num + ", " + des + ", " + instr);
 						lectures.add(temp);
 					}

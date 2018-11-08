@@ -55,8 +55,6 @@ public class Attendance extends HttpServlet {
 			// ************************* CHECK IN *************************************
 			
 			if (requestType.equals("checkIn")) {
-				String longitude = request.getParameter("longitude");
-				String latitude = request.getParameter("latitude");
 				
 				//Log datetime that student sent this request
 				Date dateRaw = new Date();
@@ -84,67 +82,15 @@ public class Attendance extends HttpServlet {
 						System.out.println("Success: student exists.");					
 						//check if today's date equals a date in the table DaysLectureMeets
 						//if datetimecorrect { if location correct { }
-						PreparedStatement ps2 = conn.prepareStatement(
-								"IF EXISTS (SELECT * FROM DaysLectureMeets WHERE lectureUUID = ? AND lectureDate = ?)"
-								+ "SELECT * FROM Lecture WHERE lectureUUID = ? AND ? BETWEEN startTime AND endTime"
-								);
-						//AddTime(startTime, '00:10:00')
-						ps2.setString(1, lectureID);
-					    ps2.setString(2, date);
-					    ps2.setString(3, lectureID);
-					    ps2.setString(4, time);
-						rs2 = ps2.executeQuery();
-						
-						if(rs2.next()) {	//class is in session
-							PreparedStatement ps3 = conn.prepareStatement(
-									"SELECT * FROM Lecture WHERE lectureUUID = ? AND longitude = ? AND latitude = ?)"
-							);
-							ps3.setString(1, lectureID);
-							ps3.setString(2, longitude);
-						    ps3.setString(3, latitude);
-						    rs3 = ps3.executeQuery();
-						    if(rs3.next()) {    //user is in the correct location
-						    	
-						    	PreparedStatement ps4 = conn.prepareStatement(
-						    			"IF EXISTS (SELECT * FROM Lecture WHERE lectureUUID = ? AND ? BETWEEN startTime AND AddTime(startTime, '00:10:00'))"
-						    			+ "INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)"
-						    	); //if inserted, it meant that the user checked in during the 10 minute time slot
-						    	ps4.setString(1, lectureID);
-							    ps4.setString(2, time);
-						    	ps4.setString(3, studentID);
-						    	ps4.setString(4, lectureID);
-						    	ps4.setString(5, date);
-						    	
-						    	int resultNum = ps4.executeUpdate();
-						    	if (resultNum > 0) {
-						    		System.out.println("4: User is in the correct location within checkin time.");
-						    		response.getWriter().write("4");
-						    	}
-						    	else {
-						    		System.out.println("3: User is in the correct location within the classtime.");
-						    		response.getWriter().write("3");
-						    	}
-						    	
-						    	
-						    }
-						    else {
-						    	System.out.println("2: You must be in the classroom to type questions.");
-						    	response.getWriter().write("2");
-						    }
-							ps3.close();
-							
-						} //endif (datetime was correct)
-						
-						else { //datetime incorrect
-							//TODO:
-							//output some error
-							System.out.println("1: Class is not in session.");
-							response.getWriter().write("1");
+						PreparedStatement ps2 = conn.prepareStatement("INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)");
+						ps2.setString(1, studentID);
+						ps2.setString(2, lectureID);
+						ps2.setString(3, date);
+						int result = ps2.executeUpdate();
+						if(result == 0) {
+							System.out.println("Attendance was not recorded");
 						}
-						ps2.close();
-						
-					} //endif (student existed)
-					ps.close();
+					}
 				}catch(SQLException sqle) {
 					System.out.println(sqle.getMessage());
 				} catch(ClassNotFoundException cnfe) {

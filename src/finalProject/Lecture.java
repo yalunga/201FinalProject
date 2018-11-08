@@ -10,7 +10,8 @@ public class Lecture {
 	public String latitude;
 	public String longitude;
 	public String meetingDaysOfWeek;
-	public Lecture(String department, String classNumber, String classDescription, String instructor, String startTime, String endTime, String latitude, String longitude, String meetingDaysOfWeek) {
+	public String id;
+	public Lecture(String department, String classNumber, String classDescription, String instructor, String startTime, String endTime, String latitude, String longitude, String meetingDaysOfWeek, String id) {
 		this.department = department;
 		this.classNumber = classNumber;
 		this.classDescription = classDescription;
@@ -20,6 +21,6 @@ public class Lecture {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.meetingDaysOfWeek = meetingDaysOfWeek;
-		
+		this.id = id;
 	}
 }

@@ -82,3 +82,26 @@ CREATE TABLE DaysLectureMeets (
 	lectureDate DATE,
     FOREIGN KEY (lectureUUID) REFERENCES Lecture(lectureUUID)
 );
+
+DELIMITER $$
+CREATE PROCEDURE generateTuesdayThursday()
+BEGIN
+	DECLARE _now DATE;
+	DECLARE _endYear DATE;
+    SET _now = DATE_FORMAT(NOW(), '%Y-11-10');
+	SET _endYear = DATE_FORMAT(NOW(), '%Y-11-29');
+while _now < _endYear DO
+	if DAYOFWEEK(_now) = 3 THEN
+		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES ('ABCD', _now);
+        SET _now = _now + INTERVAL 2 DAY;
+	ELSEIF DAYOFWEEK(_now) = 5 THEN
+		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES ('ABCD', _now);
+		SET _now = _now + INTERVAL 5 DAY;
+	ELSE
+		SET _now = _now + INTERVAL 1 DAY;
+	END IF;
+END WHILE;
+END $$
+
+DELIMITER ;
+CALL generateTuesdayThursday();

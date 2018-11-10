@@ -56,13 +56,16 @@ public class ClassesStudent extends HttpServlet {
 					if(rs.next()) {
 						System.out.println("found a lecture");
 						PreparedStatement ps2 =  conn.prepareStatement(
-								"INSERT INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
+								"INSERT IGNORE INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
 								);
 						ps2.setString(1, studentID);
 						ps2.setString(2, lectureID);
 						int result = ps2.executeUpdate();
-						System.out.println(result);
 						if(result > 0) {
+							CallableStatement stmt = conn.prepareCall("{CALL setAttendance(?, ?)}");
+							stmt.setString(1, studentID);
+							stmt.setString(2, lectureID);
+							ResultSet res = stmt.executeQuery();
 							response.getWriter().write("Added");
 						}
 						ps2.close();

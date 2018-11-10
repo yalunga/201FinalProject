@@ -82,7 +82,11 @@ public class Attendance extends HttpServlet {
 						System.out.println("Success: student exists.");					
 						//check if today's date equals a date in the table DaysLectureMeets
 						//if datetimecorrect { if location correct { }
-						PreparedStatement ps2 = conn.prepareStatement("INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate) VALUES (?, ?, ?)");
+						PreparedStatement ps2 = conn.prepareStatement("UPDATE AttendanceRecord"
+								+ " SET attendance = 1"
+								+ " WHERE studentID = ?"
+								+ " AND letureUUID = ?"
+								+ " AND lectureDate = ?");
 						ps2.setString(1, studentID);
 						ps2.setString(2, lectureID);
 						ps2.setString(3, date);

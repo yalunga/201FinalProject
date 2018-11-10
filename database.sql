@@ -73,6 +73,7 @@ CREATE TABLE AttendanceRecord (
     studentID VARCHAR(100),
     lectureUUID VARCHAR(100),
     lectureDate DATE,
+    attendance INT(11) NOT NULL,
 	FOREIGN KEY (studentID) REFERENCES User(StudentID),
     FOREIGN KEY (lectureUUID) REFERENCES Lecture(lectureUUID)
 );
@@ -102,5 +103,27 @@ while _now < _endYear DO
 	END IF;
 END WHILE;
 END $$
-
+DELIMITER ;
 CALL generateTuesdayThursday('ABCD');
+
+DELIMITER //
+CREATE PROCEDURE setAttendance(IN currStudentID VARCHAR(100), IN lectureID VARCHAR(100))
+BEGIN
+	DECLARE done BOOLEAN DEFAULT 0;
+	DECLARE currDate DATE;
+	DECLARE date_cursor CURSOR FOR 
+		SELECT lectureDate FROM DaysLectureMeets WHERE lectureUUID = lectureID;
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+	OPEN date_cursor;
+   -- Loop through all rows
+   REPEAT
+      -- Get date
+      FETCH date_cursor INTO currDate;
+      INSERT INTO AttendanceRecord (studentID, lectureUUID, lectureDate, attendance) VALUES (currStudentID, lectureID, currDate, 0);
+   -- End of loop
+   UNTIL done END REPEAT;
+   -- Close the cursor
+   CLOSE date_cursor;
+END //
+
+DELIMITER ;

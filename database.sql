@@ -84,7 +84,7 @@ CREATE TABLE DaysLectureMeets (
 );
 
 DELIMITER $$
-CREATE PROCEDURE generateTuesdayThursday()
+CREATE PROCEDURE generateTuesdayThursday(IN lectureUUID VARCHAR(100))
 BEGIN
 	DECLARE _now DATE;
 	DECLARE _endYear DATE;
@@ -92,10 +92,10 @@ BEGIN
 	SET _endYear = DATE_FORMAT(NOW(), '%Y-11-29');
 while _now < _endYear DO
 	if DAYOFWEEK(_now) = 3 THEN
-		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES ('ABCD', _now);
+		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES (lectureUUID, _now);
         SET _now = _now + INTERVAL 2 DAY;
 	ELSEIF DAYOFWEEK(_now) = 5 THEN
-		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES ('ABCD', _now);
+		INSERT INTO DaysLectureMeets (lectureUUID, lectureDate) VALUES (lectureUUID, _now);
 		SET _now = _now + INTERVAL 5 DAY;
 	ELSE
 		SET _now = _now + INTERVAL 1 DAY;
@@ -103,5 +103,4 @@ while _now < _endYear DO
 END WHILE;
 END $$
 
-DELIMITER ;
-CALL generateTuesdayThursday();
+CALL generateTuesdayThursday('ABCD');

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GlobalSocketMap {
 
 	// [userID: ServerSocket]
-	private static ConcurrentHashMap<String, ServerSocket> map = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, ServerSocket> map = new ConcurrentHashMap<>();
 	
 	public static boolean add(String userID, ServerSocket ss) {
 		if (map.containsKey(userID)) {

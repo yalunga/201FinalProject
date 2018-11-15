@@ -22,6 +22,14 @@ public class ServerSocket {
 	private String userID;
 	private Session session;
 	
+	public Session getSession() {
+		return session;
+	}
+	
+	public String getUserID() {
+		return userID;
+	}
+	
 	// https://www.mkyong.com/webservices/jax-rs/jax-rs-queryparam-example/
 	@OnOpen
 	public void open(@QueryParam("userID") String userID, Session session) {
@@ -36,24 +44,18 @@ public class ServerSocket {
 	public void onMessage(String message, Session session) {
 		
 		Message m = gson.fromJson(message, Message.class);
+		m.setTimeStamp();
 		String type = m.getType();
 		if (type.equals("NewMessage")) {
-			
+			for (ServerSocket s : GlobalSocketMap.map.values()) {
+				s.session.getAsyncRemote().sendText(gson.toJson(m));
+			}
 		} else if (type.equals("Vote")) {
-			
-		}
-		
-		System.out.println(message);
-		
-		/*
-		for(Session s: sessionVector) {
-			try {
-				s.getBasicRemote().sendText(message);
-			} catch (IOException e) {
-				e.printStackTrace();
+			for (ServerSocket s : GlobalSocketMap.map.values()) {
+				s.session.getAsyncRemote().sendText(gson.toJson(m));
 			}
 		}
-		*/
+		TimestampUtil.printMessage("Broadcasting message sent by " + m.getSender() + " of type " + m.getType() + ": " + m.getData());
 	}
 	
 	@OnClose

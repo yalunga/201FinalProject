@@ -39,7 +39,7 @@ public class Message implements Serializable {
 		this.sender = sender;
 	}
 	
-	private String setTimeStamp() {
+	public String setTimeStamp() {
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no time-zone offset
 		df.setTimeZone(tz);

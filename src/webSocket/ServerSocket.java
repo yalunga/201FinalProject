@@ -20,6 +20,7 @@ public class ServerSocket {
 	
 	private Gson gson = new Gson();
 	private String userID;
+	private String classID;
 	private Session session;
 	
 	public Session getSession() {
@@ -32,10 +33,11 @@ public class ServerSocket {
 	
 	// https://www.mkyong.com/webservices/jax-rs/jax-rs-queryparam-example/
 	@OnOpen
-	public void open(@QueryParam("userID") String userID, Session session) {
-		TimestampUtil.printMessage(userID + " is trying to open a connection.");
+	public void open(@QueryParam("userID") String userID, @QueryParam("classID") String classID, Session session) {
+		TimestampUtil.printMessage(userID + " from class " + classID + " is trying to open a connection.");
 		this.session = session;
 		this.userID = userID;
+		this.classID = classID;
 		GlobalSocketMap.add(userID, this);
 		TimestampUtil.printMessage(userID + " has opened a connection.");
 	}
@@ -49,16 +51,22 @@ public class ServerSocket {
 		Utilities.saveMessageToDB(m);
 		
 		String type = m.getType();
+
+		TimestampUtil.printMessage("Broadcasting message sent by " + userID + " from class " + classID + " of type " + m.getType() + ": " + m.getData());
+
 		if (type.equals("NewMessage")) {
 			for (ServerSocket s : GlobalSocketMap.map.values()) {
-				s.session.getAsyncRemote().sendText(gson.toJson(m));
+				if (s.classID.equals(m.getClassID())) {
+					s.session.getAsyncRemote().sendText(gson.toJson(m));
+				}
 			}
 		} else if (type.equals("Vote")) {
 			for (ServerSocket s : GlobalSocketMap.map.values()) {
-				s.session.getAsyncRemote().sendText(gson.toJson(m));
+				if (s.classID.equals(m.getClassID())) {
+					s.session.getAsyncRemote().sendText(gson.toJson(m));
+				}
 			}
 		}
-		TimestampUtil.printMessage("Broadcasting message sent by " + m.getSender() + " of type " + m.getType() + ": " + m.getData());
 	}
 	
 	@OnClose

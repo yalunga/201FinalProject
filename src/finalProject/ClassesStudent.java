@@ -56,7 +56,7 @@ public class ClassesStudent extends HttpServlet {
 					if(rs.next()) {
 						System.out.println("found a lecture");
 						PreparedStatement ps2 =  conn.prepareStatement(
-								"INSERT IGNORE INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
+								"INSERT IF NOT EXISTS INTO LectureRegistration (userID, lectureUUID) VALUES (?, ?)"
 								);
 						ps2.setString(1, studentID);
 						ps2.setString(2, lectureID);

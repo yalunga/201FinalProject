@@ -45,6 +45,9 @@ public class ServerSocket {
 		
 		Message m = gson.fromJson(message, Message.class);
 		m.setTimeStamp();
+		
+		Utilities.saveMessageToDB(m);
+		
 		String type = m.getType();
 		if (type.equals("NewMessage")) {
 			for (ServerSocket s : GlobalSocketMap.map.values()) {
@@ -60,7 +63,7 @@ public class ServerSocket {
 	
 	@OnClose
 	public void close(Session session) {
-		System.out.println("Disconnected");
+		TimestampUtil.printMessage(userID + " has closed the connection.");
 	}
 	
 	@OnError

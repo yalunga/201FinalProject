@@ -3,12 +3,14 @@ package dataModels;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 
 public class Message implements Serializable {
+	
 	private static final long serialVersionUID = -4030241954210383602L;
 	
 	private String type;
@@ -18,7 +20,7 @@ public class Message implements Serializable {
 	private String classID;
 	private String sender;
 	private String TIMESTAMP;
-	
+		
 	// Use for type == "NewMessage"
 	// This is an actual message containing the question.
 	public Message(String data, String classID, String messageID, String sender) {
@@ -65,6 +67,19 @@ public class Message implements Serializable {
 	public int getVotes() {
 		return voters.size();
 	}
+	
+	public void setVoters(Set<String> voters) {
+		this.voters = voters;
+	}
+	
+	public void setVoters(String votersCSV) {
+		String[] temp = votersCSV.split(",");
+		voters = new HashSet<String>(Arrays.asList(temp));
+	}
+	
+	public String votersToCSV() {
+		return String.join(",", voters);
+	}
 
 	// Acts as a toggle.
 	public boolean vote(String userID) {
@@ -95,6 +110,10 @@ public class Message implements Serializable {
 
 	public String getTIMESTAMP() {
 		return TIMESTAMP;
+	}
+	
+	public void setTIMESTAMP(String t) {
+		TIMESTAMP = t;
 	}
 	
 

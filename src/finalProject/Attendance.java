@@ -113,37 +113,38 @@ public class Attendance extends HttpServlet {
 			
 			// ************************* GET HISTORY *************************************
 			
-			else if (requestType.equals("getHistory")) {
+else if (requestType.equals("getHistory")) {
 				
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_6033235a05719ed?user=bcbc373fe829dc&password=345a5a30&useSSL=false");
+					Date dateRaw = new Date();
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+					System.out.println(simpleDateFormat.format(dateRaw));
+					String dateFull = simpleDateFormat.format(dateRaw);
+					//Final result: 
+					String date = dateFull.substring(0,10);
+					String time = dateFull.substring(11);
 					
-					
-					ArrayList<String> daysAbsent = new ArrayList<String>();
+					ArrayList<AttendanceObject> attendanceData = new ArrayList<AttendanceObject>();
 					
 					// get all dates lecture met
-					PreparedStatement ps1 = conn.prepareStatement(
-							"SELECT d.lectureDate "
-							+ "FROM DaysLectureMeets d "
-							+ "WHERE lectureUUID = ?"
-							+ "AND NOT EXISTS"
-							+ "(SELECT a.lectureDate"
-							+ "FROM AttendanceRecord a "
-							+ "WHERE a.studentID = ? AND a.lectureUUID = ?)"
-							);
+					PreparedStatement ps1 = conn.prepareStatement("SELECT u.fullName, AttendanceRecord.studentID, AttendanceRecord.lectureDate, AttendanceRecord.attendance FROM AttendanceRecord INNER JOIN user u ON AttendanceRecord.studentID = u.userID WHERE AttendanceRecord.lectureUUID = ? AND AttendanceRecord.lectureDate < ?");
 					ps1.setString(1, lectureID);
-					ps1.setString(2, studentID);
-					ps1.setString(3, lectureID);
+					ps1.setString(2, date);
 					rs = ps1.executeQuery();
 					while(rs.next()) {
-						Date date = rs.getDate("d.lectureDate");
-						
-						daysAbsent.add(date.toString());
+						String name = rs.getString("fullName");
+						String id = rs.getString("studentID");
+						String lectureDate = rs.getDate("lectureDate").toString();
+						int attended = rs.getInt("attendance");
+						AttendanceObject temp = new AttendanceObject(lectureDate, attended, studentID, name);
+						attendanceData.add(temp);
 					}
 
 				
-					String json = new Gson().toJson(daysAbsent);
+					String json = new Gson().toJson(attendanceData);
 					response.getWriter().write(json);
 				} catch(SQLException sqle) {
 					System.out.println(sqle.getMessage());

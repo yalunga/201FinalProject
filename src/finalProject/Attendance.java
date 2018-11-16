@@ -34,9 +34,8 @@ public class Attendance extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		// response.getWriter().append("Served at: ").append(request.getContextPath());
 		String requestType = request.getParameter("requestType");
 		String studentID = request.getParameter("studentID");
 		String lectureID = request.getParameter("lectureID");
@@ -69,7 +68,7 @@ public class Attendance extends HttpServlet {
 				try {	
 
 					Class.forName("com.mysql.jdbc.Driver");
-					conn =  DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+					conn =  DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_6033235a05719ed?user=bcbc373fe829dc&password=345a5a30&useSSL=false");
 					
 					
 					ps = conn.prepareStatement(
@@ -85,14 +84,16 @@ public class Attendance extends HttpServlet {
 						PreparedStatement ps2 = conn.prepareStatement("UPDATE AttendanceRecord"
 								+ " SET attendance = 1"
 								+ " WHERE studentID = ?"
-								+ " AND letureUUID = ?"
+								+ " AND lectureUUID = ?"
 								+ " AND lectureDate = ?");
 						ps2.setString(1, studentID);
 						ps2.setString(2, lectureID);
 						ps2.setString(3, date);
 						int result = ps2.executeUpdate();
 						if(result == 0) {
-							System.out.println("Attendance was not recorded");
+							response.getWriter().write("Failed");
+						} else {
+							response.getWriter().write("Success");
 						}
 					}
 				}catch(SQLException sqle) {
@@ -112,11 +113,11 @@ public class Attendance extends HttpServlet {
 			
 			// ************************* GET HISTORY *************************************
 			
-else if (requestType.equals("getHistory")) {
+			else if (requestType.equals("getHistory")) {
 				
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
-					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+					conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_6033235a05719ed?user=bcbc373fe829dc&password=345a5a30&useSSL=false");
 					
 					
 					ArrayList<String> daysAbsent = new ArrayList<String>();
@@ -136,8 +137,9 @@ else if (requestType.equals("getHistory")) {
 					ps1.setString(3, lectureID);
 					rs = ps1.executeQuery();
 					while(rs.next()) {
-						String date = rs.getString("d.lectureDate");
-						daysAbsent.add(date);
+						Date date = rs.getDate("d.lectureDate");
+						
+						daysAbsent.add(date.toString());
 					}
 
 				
@@ -155,9 +157,54 @@ else if (requestType.equals("getHistory")) {
 						System.out.println(sqle.getMessage());
 					}
 				}
+			} else if(requestType.equals("getStudentHistory")) {
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_6033235a05719ed?user=bcbc373fe829dc&password=345a5a30&useSSL=false");
+					Date dateRaw = new Date();
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					simpleDateFormat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+					System.out.println(simpleDateFormat.format(dateRaw));
+					String dateFull = simpleDateFormat.format(dateRaw);
+					//Final result: 
+					String date = dateFull.substring(0,10);
+					String time = dateFull.substring(11);
+					
+					ArrayList<AttendanceObject> Attendance = new ArrayList<AttendanceObject>();
+					
+					// get all dates lecture met
+					PreparedStatement ps1 = conn.prepareStatement("SELECT lectureDate, attendance FROM AttendanceRecord WHERE studentID = ? AND lectureUUID = ? AND lectureDate BETWEEN 2018-11-01 AND ?");
+					ps1.setString(1, studentID);
+					ps1.setString(2, lectureID);
+					ps1.setString(3, date);
+					rs = ps1.executeQuery();
+					while(rs.next()) {
+						String lectureDate = rs.getDate("lectureDate").toString();
+						int attended = rs.getInt("attendance");
+						AttendanceObject temp = new AttendanceObject(lectureDate, attended);
+						
+						Attendance.add(temp);
+					}
+
+				
+					String json = new Gson().toJson(Attendance);
+					response.getWriter().write(json);
+				} catch(SQLException sqle) {
+					System.out.println(sqle.getMessage());
+				} catch(ClassNotFoundException cnfe) {
+					System.out.println(cnfe.getMessage());
+				} finally {
+					try {
+						if(ps != null) { ps.close(); }
+						if(conn != null) { conn.close(); }
+					} catch(SQLException sqle) {
+						System.out.println(sqle.getMessage());
+					}
+				}
 			}
 		}
 	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

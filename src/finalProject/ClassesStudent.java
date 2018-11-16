@@ -46,7 +46,7 @@ public class ClassesStudent extends HttpServlet {
 			String lectureID = request.getParameter("lectureID");
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				conn =  DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+				conn =  DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/?user=bcbc373fe829dc&useSSL=false");
 				ps =  conn.prepareStatement(
 						"SELECT * FROM Lecture WHERE lectureUUID=?"
 						);

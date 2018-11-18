@@ -1,37 +1,37 @@
 package finalProject;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * Servlet implementation class UserLogin
  */
-@WebServlet("/UserLogin")
 public class UserLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+       
     /**
-     * Default constructor. 
+     * @see HttpServlet#HttpServlet()
      */
     public UserLogin() {
+        super();
         // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String requestType = request.getParameter("requestType");
 		String idToken = request.getParameter("idToken");
-		
 		//************************** GOOGLE AUTH STUFF ***********************************
 		
 		
@@ -90,7 +90,6 @@ public class UserLogin extends HttpServlet {
 				String userType = request.getParameter("userType");
 				String studentID;
 				String instructorID;
-				
 				if (userType.equals("student")) {
 					studentID = userID;
 					instructorID = null;
@@ -99,11 +98,10 @@ public class UserLogin extends HttpServlet {
 					instructorID = userID;
 					studentID = null;
 				}
-				
 				try {
 					System.out.println("Trying to add idtoken " + idToken + " to the database.");
 					Class.forName("com.mysql.jdbc.Driver");
-					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
+					conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_6033235a05719ed?user=bcbc373fe829dc&password=345a5a30&useSSL=false");
 					ps = conn.prepareStatement(
 							"INSERT INTO User (userID, fullName, lastName, firstName, email, userType, studentID) VALUES (?, ?, ?, ?, ?, ?, ?)"
 							);
@@ -128,8 +126,10 @@ public class UserLogin extends HttpServlet {
 					
 				} catch(SQLException sqle) {
 					System.out.println(sqle.getMessage());
+					//response.getWriter().write(sqle.getMessage());
 				} catch(ClassNotFoundException cnfe) {
 					System.out.println(cnfe.getMessage());
+					//response.getWriter().write(cnfe.getMessage());
 				} finally {
 					try {
 						if(ps != null) { ps.close(); }
@@ -139,41 +139,7 @@ public class UserLogin extends HttpServlet {
 					}
 				}
 			}
-    }
-			
-			// ************************* GET USER PROFILE *************************************
-
-			/*else if (requestType.equals("getUserProfile")) {
-				
-				try {
-					
-					Class.forName("com.mysql.jdbc.Driver");
-					conn = DriverManager.getConnection("jdbc:mysql://localhost/askUSC?user=root&password=root&useSSL=false");
-					ps = conn.prepareStatement(
-							"SELECT * FROM User WHERE UserID = ?"
-							);
-					ps.setString(1, userID);
-					
-					
-					
-				} catch(SQLException sqle) {
-					System.out.println(sqle.getMessage());
-				} catch(ClassNotFoundException cnfe) {
-					System.out.println(cnfe.getMessage());
-				} finally {
-					try {
-						if(ps != null) { ps.close(); }
-						if(conn != null) { conn.close(); }
-					} catch(SQLException sqle) {
-						System.out.println(sqle.getMessage());
-					}
-				}
-			}
-		}
-		
-		
-	//}
-
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
